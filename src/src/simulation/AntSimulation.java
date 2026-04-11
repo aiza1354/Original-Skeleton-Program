@@ -185,8 +185,10 @@ public class AntSimulation {
             return (row - 1) * numberOfColumns + column - 1;
         }
 
+        // go to readMe file
         private ArrayList<Integer> getIndicesOfNeighbours(int row, int column) {
             ArrayList<Integer> listOfNeighbours = new ArrayList<Integer>();
+            // special method of creating the array list and loop at the same time
             for (Integer rowDirection : Arrays.asList(-1, 0, 1)) {
                 for (Integer columnDirection : Arrays.asList(-1, 0, 1)) {
                     int neighbourRow = row + rowDirection;
@@ -196,6 +198,7 @@ public class AntSimulation {
                             (neighbourColumn >= 1) && (neighbourColumn <= numberOfColumns)) {
                         listOfNeighbours.add(getIndex(neighbourRow, neighbourColumn));
                     } else {
+                        // to not add the cell that we are standing on!!
                         listOfNeighbours.add(-1);
                     }
                 }
@@ -203,8 +206,14 @@ public class AntSimulation {
             return listOfNeighbours;
         }
 
+        // strongestP is 0 and index of it is -1 because 0 could alsio be a possibility.
+        // we are looping through the indices of neighbours and if idex is -1 and there is some strongestPheremone
+        // then index is the idnex of the strognest pheremone.
+        // and strongest pheremons is
         private int getIndexOfNeighbourWithStrongestPheromone(int row, int column) {
-            int strongestPheromone = 0, indexOfStrongestPheromone = -1;
+            int strongestPheromone = 0;
+            // indexOfStrongPheremone could be (the first cell in our grid), so we start from -1 :DDD
+            int indexOfStrongestPheromone = -1;
             for (Integer index : getIndicesOfNeighbours(row, column)) {
                 if (index != -1 && getStrongestPheromoneInCell(grid.get(index)) > strongestPheromone) {
                     indexOfStrongestPheromone = index;
@@ -252,7 +261,7 @@ public class AntSimulation {
             }
             return count;
         }
-
+        // this loop through pheromones in the entire grid, check if the one of them is in the same location as the cell that has been passed. If yes it gets the one that is the strongest.
         public int getStrongestPheromoneInCell(Cell c) {
             int strongest = 0;
             for (Pheromone p : pheromones) {
@@ -361,6 +370,9 @@ public class AntSimulation {
 
         public void advanceStage(int numberOfStages) {
             for (int count = 1; count <= numberOfStages; count++) {
+                // Making arrayList which holds the one we need to delete. For loop loops through original pheremone list
+                // and checks which one has 0 strength, add it to pheromoneDelete.
+                // Then we loop through pheromones to delete, and remove this one from the original list.
                 ArrayList<Pheromone> pheromonesToDelete = new ArrayList<Pheromone>();
                 for (Pheromone p : pheromones) {
                     p.advanceStage(nests, ants, pheromones);
@@ -380,7 +392,10 @@ public class AntSimulation {
                     } else if ((currentCell.getAmountOfFood() > 0) && (a.getFoodCarried() == 0) && (a.getFoodCapacity() > 0)) {
                         int foodObtained;
                         do {
+                            // there is a plus one here to ensure that we don't get 0 as our random number.
                             foodObtained = rGen.nextInt(a.getFoodCapacity()) + 1;
+                            // if the ant has no food, and there isd food in the cell. it will try to pick up some food.
+                            // it will pick up the amount of food randomly (but this will be less than the amount in the cell and less than the ants capacity).
                         } while (!(foodObtained <= currentCell.getAmountOfFood() && (a.getFoodCarried() + foodObtained) <= a.getFoodCapacity()));
                         currentCell.updateFoodInCell(-foodObtained);
                         a.updateFoodCarried(foodObtained);
@@ -515,6 +530,8 @@ public class AntSimulation {
         }
 
         public void chooseCellToMoveTo(ArrayList<Integer> listOfNeighbours, int indexOfNeighbourWithStrongestPheromone) {
+
+
         }
 
         public int getFoodCarried() {
