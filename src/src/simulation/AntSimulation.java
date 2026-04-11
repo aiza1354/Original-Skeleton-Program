@@ -21,7 +21,8 @@ public class AntSimulation {
     public static void main(String[] args) throws Exception {
         ArrayList<Integer> simulationParameters = new ArrayList<Integer>();
         System.out.print("Enter simulation number: ");
-        String simNo = scanner.nextLine();  switch (simNo) {
+        String simNo = scanner.nextLine();
+        switch (simNo) {
             case "1":
                 simulationParameters = new ArrayList<Integer>(Arrays.asList(1, 5, 5, 500, 3, 5, 1000, 50));
                 break;
@@ -41,17 +42,22 @@ public class AntSimulation {
             displayMenu();
             choice = scanner.nextLine();  switch (choice) {
                 case "1":
-
                     System.out.println(thisSimulation.getDetails());
                     break;
                 case "2":
-                    IntWrapper startRow = new IntWrapper(0), startColumn = new IntWrapper(0);  IntWrapper endRow = new IntWrapper(0), endColumn = new IntWrapper(0);  getCellReference(startRow, startColumn);
+                    // setting the initial values of columns and rows to 0;
+                    IntWrapper startRow = new IntWrapper(0);
+                    IntWrapper startColumn = new IntWrapper(0);
+                    IntWrapper endRow = new IntWrapper(0);
+                    IntWrapper endColumn = new IntWrapper(0);
+                    getCellReference(startRow, startColumn);
                     getCellReference(endRow, endColumn);
-
                     System.out.println(thisSimulation.getAreaDetails(startRow.value, startColumn.value, endRow.value, endColumn.value));
                     break;
                 case "3":
-                    IntWrapper row = new IntWrapper(0), column = new IntWrapper(0);  getCellReference(row, column);
+                    IntWrapper row = new IntWrapper(0);
+                    IntWrapper column = new IntWrapper(0);
+                    getCellReference(row, column);
                     System.out.println(thisSimulation.getCellDetails(row.value, column.value));
                     break;
                 case "4":
@@ -79,8 +85,8 @@ public class AntSimulation {
     }
     static void getCellReference(IntWrapper row, IntWrapper column) {
         System.out.println();
-        System.out.print("Enter row number: ");  row.value =
-                Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter row number: ");
+        row.value = Integer.parseInt(scanner.nextLine());
         System.out.print("Enter column number: ");
         column.value =
                 Integer.parseInt(scanner.nextLine());
@@ -201,14 +207,16 @@ public class AntSimulation {
                     Pheromone(a.getRow(), a.getColumn(), a.getID(), newPheromoneStrength, pheromoneDecay));  }
         public int getNumberOfAntsInCell(Cell c) {  int count = 0;
             for (Ant a : ants) {
-                if (a.inSameLocation(c)) {  count++;
+                if (a.inSameLocation(c)) {
+                    count++;
                 }
             }
             return count;
         }
         public int getNumberOfPheromonesInCell(Cell c) {
             int count = 0;
-            for (Pheromone p : pheromones) {  if (p.inSameLocation(c)) {  count++;
+            for (Pheromone p : pheromones) {
+                if (p.inSameLocation(c)) {  count++;
             }
             }
             return count;
@@ -226,19 +234,23 @@ public class AntSimulation {
         }
         public String getDetails() {
             String details = "";
+            // creating grid
             for (int row = 1; row <= numberOfRows; row++) {
+                // LOOP THROUGH GRID TO PRINT
                 for (int column = 1; column <= numberOfColumns; column++) {
                     details += row + ", " + column + ": ";
-                    Cell tempCell =
-                            grid.get(getIndex(row, column));
+                    //Loop through the nest List, and compare the coordinates to the coordinates of the grid. If they match, print out Nest next that cell!
+                    Cell tempCell = grid.get(getIndex(row, column));
                     if (getNestInCell(tempCell) != null) {
-                        details += "| Nest | ";  }
-                    int numberOfAnts =
-                            getNumberOfAntsInCell(tempCell);
+                        details += "| Nest | ";
+                    }
+                    // LOOP THROUGH ANT LIST, WHENEVER YOU ENCOUNTER AN ANT AT A CELL, ++.
+                    int numberOfAnts = getNumberOfAntsInCell(tempCell);
                     if (numberOfAnts > 0) {  details += "| Ants: " + numberOfAnts + " | ";
                     }
-                    int numberOfPheromones =
-                            getNumberOfPheromonesInCell(tempCell);  if (numberOfPheromones > 0) {
+                    // LOOP THROUGH PHEROMONES LIST, WHENEVER YOU ENCOUNTER AN ANT AT A CELL, ++.
+                    int numberOfPheromones = getNumberOfPheromonesInCell(tempCell);
+                    if (numberOfPheromones > 0) {
                         details += "| Pheromones: " + numberOfPheromones + " | ";
                     }
                     int amountOfFood =
@@ -263,11 +275,14 @@ public class AntSimulation {
                     if (numberOfAnts > 0) {  details += "| Ants: " + numberOfAnts + " | ";
                     }
                     int numberOfPheromones =
-                            getNumberOfPheromonesInCell(tempCell);  if (numberOfPheromones > 0) {  details += "| Pheromones: " + numberOfPheromones + " | ";
+                            getNumberOfPheromonesInCell(tempCell);
+                    if (numberOfPheromones > 0) {
+                        details += "| Pheromones: " + numberOfPheromones + " | ";
                     }
                     int amountOfFood =
                             tempCell.getAmountOfFood();
-                    if (amountOfFood > 0) {  details += "| " + amountOfFood + " food | ";
+                    if (amountOfFood > 0) {
+                        details += "| " + amountOfFood + " food | ";
                     }
                     details += "\n";
                 }
@@ -286,7 +301,8 @@ public class AntSimulation {
                     grid.get(getIndex(row, column));
             String details =
                     currentCell.getDetails();
-            Nest n = getNestInCell(currentCell);  if (n != null) {
+            Nest n = getNestInCell(currentCell);
+            if (n != null) {
                 details += "Nest present (" + n.getFoodLevel() + " food)\n\n";
             }
             if (getNumberOfAntsInCell(currentCell) > 0) {
@@ -351,11 +367,13 @@ public class AntSimulation {
         }
     }
     static class Entity {
+        // CONTAINS LOCATION AND ID
         protected int row, column, id;
         Entity(int startRow, int startColumn) {  row = startRow;
             column = startColumn;
         }
-        public boolean inSameLocation(Entity e) {  return e.getRow() == row && e.getColumn() == column;
+        public boolean inSameLocation(Entity e) {
+            return e.getRow() == row && e.getColumn() == column;
         }
         public int getRow() {
             return row;
@@ -375,7 +393,8 @@ public class AntSimulation {
     static class Cell extends Entity {  protected int amountOfFood;
         Cell(int startRow, int startColumn) {  super(startRow, startColumn);  amountOfFood = 0;
         }
-        public int getAmountOfFood() {  return amountOfFood;
+        public int getAmountOfFood() {
+            return amountOfFood;
         }
         @Override
         public String getDetails() {
@@ -548,8 +567,10 @@ public class AntSimulation {
             }
         }
     }
-    static class Pheromone extends Entity {  protected int strength, pheromoneDecay, belongsTo;
-        Pheromone(int row, int column, int belongsToAnt, int initialStrength, int decay) {  super(row, column);
+    static class Pheromone extends Entity {
+        protected int strength, pheromoneDecay, belongsTo;
+        Pheromone(int row, int column, int belongsToAnt, int initialStrength, int decay) {
+            super(row, column);
             belongsTo = belongsToAnt;  strength = initialStrength;  pheromoneDecay = decay;
         }
         @Override
