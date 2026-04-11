@@ -2,6 +2,8 @@
 
 package simulation1;
 
+import org.w3c.dom.ranges.RangeException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -21,9 +23,23 @@ public class AntSimulation {
 
     public static void main(String[] args) throws Exception {
         ArrayList<Integer> simulationParameters = new ArrayList<Integer>();
+        String simNo = "";
+        int integerSim = 0;
+        while (true) {
+            try {
+                System.out.println("Enter simulation number. Please enter a number between 1 and 4.");
+                simNo = scanner.nextLine();
+                integerSim = Integer.parseInt(simNo);
+                if (integerSim >=1 && integerSim <= 4) {
+                    break;
+                } else {
+                    System.out.println("Must be in range 1-4.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("User correct format please");
+            }
+        }
 
-        System.out.print("Enter simulation number: ");
-        String simNo = scanner.nextLine();
         switch (simNo) {
             case "1":
                 simulationParameters = new ArrayList<Integer>(Arrays.asList(1, 5, 5, 500, 3, 5, 1000, 50));
@@ -108,6 +124,7 @@ public class AntSimulation {
         protected ArrayList<Nest> nests = new ArrayList<Nest>();
         protected int numberOfRows, numberOfColumns, startingFoodInNest, startingNumberOfFoodCells, startingNumberOfNests;
         protected int startingAntsInNest, newPheromoneStrength, pheromoneDecay;
+        protected int totalNumberOfAntsCulled;
 
         Simulation(ArrayList<Integer> simulationParameters) {
             startingNumberOfNests = simulationParameters.get(0);

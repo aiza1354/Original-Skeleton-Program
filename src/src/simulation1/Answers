@@ -1,0 +1,33 @@
+Q15.1 protected in strength, pheromoneDecay, belongsTo
+Q15.2 A programmer would choose to make a method private instead of public to hide the internal state of the object from the outside world
+Q15.3 During a *for-each loop*, if we delete while looping, this is known as Concurrent modification, which can cause the programme to crash, which is why neesd a temporary "trash" holder. You could use a for-i loop but you may still need a counter.
+--> Deleting directly from a list while iterating through a for-each loop can throw an error.
+Section D
+Q16
+        String simNo = "";
+        int integerSim = 0;
+        while (integerSim < 1 || integerSim > 4) {
+            try {
+                System.out.print("Enter simulation number. Please enter a number between 1 and 4.");
+                simNo = scanner.nextLine();
+                integerSim = Integer.parseInt(simNo);
+            } catch (IllegalArgumentException e) {
+                System.out.println("An out of bound error has occured. ");
+            }
+        }
+Q17
+Q18.1: getIndicesOfNeighbours
+Q18.2: The method passes the parameters row and column which iws where the ant currently resides.
+We looop through getIndicesOfNeghbours which carries the details of the cells directly ahbove, below to the left and roght if othe cell.
+Then we ensure that if a cell does not have an index of -1 (off the grid) and their pheromone is the greater that strognest pheremone, we update the details so in the first past, it will be greater than 0, in the next one it may greater than the previous one or it may stay the same.
+Thew strongestphereone is the one that has the strongestpheremone after sucessfully looping through all the pheremones in the current cells neighbours. Finally we return the index of the cell that hjas the greatest phermeopne strenght (that is neghbour).
+        private int getIndexOfNeighbourWithStrongestPheromone(int row, int column) {
+            int strongestPheromone = 0, indexOfStrongestPheromone = -1;
+            for (Integer index : getIndicesOfNeighbours(row, column)) {
+                if (index != -1 && getStrongestPheromoneInCell(grid.get(index)) > strongestPheromone) {
+                    indexOfStrongestPheromone = index;
+                    strongestPheromone = getStrongestPheromoneInCell(grid.get(index));
+                }
+            }
+            return indexOfStrongestPheromone;
+        }
