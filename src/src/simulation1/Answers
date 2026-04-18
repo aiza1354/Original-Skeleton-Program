@@ -31,3 +31,33 @@ Thew strongestphereone is the one that has the strongestpheremone after sucessfu
             }
             return indexOfStrongestPheromone;
         }
+Another exception handling q:
+    static void getCellReference(IntWrapper row, IntWrapper column) {
+        boolean valid = false;
+        while (!valid) {
+            try {
+                System.out.print("Enter row number: ");
+                row.value = Integer.parseInt(scanner.nextLine());
+                System.out.print("Enter column number: ");
+                column.value = Integer.parseInt(scanner.nextLine());
+                System.out.println();
+                if (row.value < 1 || column.value < 1) {
+                    valid = false;
+                    throw new IllegalArgumentException();
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                valid = false;
+                System.out.println("Please input a valid format.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Please input a valid format.");
+            }
+        }
+    }
+
+    **throwing an exception**
+
+    Always make sure that you throw an exception. Basically under try catch u write throw, then you write catch later!
+
+    To checkl if something equals something insatead you oculd use is a instanceof ScoutAnt for example.
