@@ -61,3 +61,17 @@ Another exception handling q:
     Always make sure that you throw an exception. Basically under try catch u write throw, then you write catch later!
 
     To checkl if something equals something insatead you oculd use is a instanceof ScoutAnt for example.
+
+    Question 8
+    8.1: ___
+    It is necessary to make the attribute static to ensure that the Nest Class is able to access it as otherwise, this is not possible.
+    8.2:
+    protected
+    Question 9
+    9.1:
+    This is to ensure that we add all the possible cells to the list of neighbouts array but ignore the cell the ant is on, as that should not be classified as a neighbout.!
+    9.2:
+    ___
+    Question 10:
+    10.1:
+

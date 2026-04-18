@@ -1,0 +1,83 @@
+*SECTION C*
+QUESTION 8:
+8.1
+Using protected allows classes that are subclasses of the AntSimulation class to access the id while ensuring that other classes that do not inherit from AntSimulation still cannot see the internal state of the id attribute.
+8.2 ******
+It must be declared as static to ensure that other classes can access it as it changes, otherise, they may not have access to the update value.
+Question 9:
+9.1:
+            return (row - 1) * numberOfColumns + column - 1;
+Row = 3, column = 2, and noC = 5
+BIDMAS
+(row -1) --> 3-1 = 2
+2 * noC = 2 x 5 = 10
+10 + columns = 10 + 2 = 12
+12 -1 = 11!
+9.2:
+An exception would be thrown as that is known as a Concurrent modification.
+Question 10:
+10.1: If the ant is carrying food, they would want to get closer to their nest cell in order to release the food and share it with other ants within the nest. Otherwise, it will have randomised movement.
+10.2: ******
+Section D:
+Question 11:
+public void setUpANestAt(int row, int column) {
+    if (row == 1 || row == numberOfRows || column == 1 || column == numberOfColumns) {
+        System.out.println("Invalid Nest Location");
+    } else {
+        nests.add(new Nest(row, column, startingFoodInNest));
+        ants.add(new QueenAnt(row, column, row, column));
+        for (int worker = 2; worker <= startingAntsInNest; worker++) {
+            ants.add(new WorkerAnt(row, column, row, column));
+        }
+    }
+}
+Question 12:
+for (Nest n : nests) {
+    n.advanceStage(nests, ants, pheromones);
+    totalStepsTaken++;
+if (totalStepsTaken > 0) {
+    details += "\nTotal colony steps: " + totalNumberOfAntsCulled + "\n";
+}
+Question 13:
+for (Ant a : ants) {
+    a.advanceStage(nests, ants, pheromones);
+    Cell currentCell = grid.get(getIndex(a.getRow(), a.getColumn()));
+    if ((a.getFoodCarried() > 0) && a.isAtOwnNest()) {
+        addFoodToNest(a.getFoodCarried(), a.getRow(), a.getColumn());
+        a.updateFoodCarried(-a.getFoodCarried());
+    } else if ((currentCell.getAmountOfFood() > 0) && (a.getFoodCarried() == 0) && (a.getFoodCapacity() > 0) && getNumberOfAntsInCell(currentCell) < 3) {
+        int foodObtained;
+        do {
+            foodObtained = rGen.nextInt(a.getFoodCapacity()) + 1;
+        } while (!(foodObtained <= currentCell.getAmountOfFood() && (a.getFoodCarried() + foodObtained) <= a.getFoodCapacity()));
+        currentCell.updateFoodInCell(-foodObtained);
+        a.updateFoodCarried(foodObtained);
+    } else {
+        if (a.getFoodCarried() > 0) {
+            updateAntsPheromoneInCell(a);
+        }
+        a.chooseCellToMoveTo(getIndicesOfNeighbours(a.getRow(), a.getColumn()), getIndexOfNeighbourWithStrongestPheromone(a.getRow(), a.getColumn()));
+    }
+}
+Corrections:
+8.2: Static means that a variable is shared by all instances of the class. If it wasnt static, every new ant would starts with ID 1 because they didnt have their own "copy" of the counter.
+10.2: List Membership check and it is more readable and easier to maintain than multiple if statements.
+12:
+
+RTQ properly + realise that you had to check if it was in the same location as temp cell
+Question 14:
+DIFFICULT: BUT when you override, you almost always have to super something. If you are overriding a method, do super.method.
+this. is necessary if you are using a variable that it part of the override.
+for (Ant a : ants) {
+    if (a.inSameLocation(tempCell) && a.getTypeOfAnt().equals("hungry")) {
+        foundHungryAnt = true;
+        break;
+    }
+}
+
+💡 The "Pro-Tip" for the Exam
+Whenever you need to check a property of a cell in a Task, always ask yourself:
+
+Which list is it in? (Usually grid, ants, or pheromones).
+How do I find the right one? (Usually getIndex or a for-each loop).
+What method does that object have? (Check the class definitions at the bottom of the file).

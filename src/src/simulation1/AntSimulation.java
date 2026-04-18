@@ -2,8 +2,6 @@
 
 package simulation1;
 
-import org.w3c.dom.ranges.RangeException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -87,7 +85,7 @@ public class AntSimulation {
                     System.out.println("Simulation moved on " + numberOfStages + " stages\n");
                     break;
             }
-        } while (!choice.equals("9"));
+        } while (!choice.equals("9") );
         String finish = scanner.nextLine();
     }
 
@@ -140,6 +138,7 @@ public class AntSimulation {
         protected int numberOfRows, numberOfColumns, startingFoodInNest, startingNumberOfFoodCells, startingNumberOfNests;
         protected int startingAntsInNest, newPheromoneStrength, pheromoneDecay;
         protected static int totalNumberOfAntsCulled = 0;
+        protected static int totalStepsTaken = 0;
 
         Simulation(ArrayList<Integer> simulationParameters) {
             startingNumberOfNests = simulationParameters.get(0);
@@ -182,6 +181,8 @@ public class AntSimulation {
                     for (Nest n : nests) {
                         if (n.getRow() == row && n.getColumn() == column) {
                             allowed = false;
+                        } else if (grid.get(getIndex(row, column)).getAmountOfFood() > 0) {
+                            allowed = false;
                         }
                     }
                 } while (!allowed);
@@ -190,10 +191,14 @@ public class AntSimulation {
         }
 
         public void setUpANestAt(int row, int column) {
-            nests.add(new Nest(row, column, startingFoodInNest));
-            ants.add(new QueenAnt(row, column, row, column));
-            for (int worker = 2; worker <= startingAntsInNest; worker++) {
-                ants.add(new WorkerAnt(row, column, row, column));
+            if (row == 1 || row == numberOfRows || column == 1 || column == numberOfColumns) {
+                System.out.println("Invalid Nest Location");
+            } else {
+                nests.add(new Nest(row, column, startingFoodInNest));
+                ants.add(new QueenAnt(row, column, row, column));
+                for (int worker = 2; worker <= startingAntsInNest; worker++) {
+                    ants.add(new WorkerAnt(row, column, row, column));
+                }
             }
         }
 
@@ -288,8 +293,10 @@ public class AntSimulation {
             return strongest;
         }
 
+
         public String getDetails() {
             String details = "";
+            boolean foundHungryAnt = false;
             for (int row = 1; row <= numberOfRows; row++) {
                 for (int column = 1; column <= numberOfColumns; column++) {
                     details += row + ", " + column + ": ";
@@ -309,11 +316,22 @@ public class AntSimulation {
                     if (amountOfFood > 0) {
                         details += "| " + amountOfFood + " food | ";
                     }
-                    details += "\n";
+                    for (Ant a : ants) {
+                        if (a.inSameLocation(tempCell) && a.getTypeOfAnt().equals("hungry")) {
+                            foundHungryAnt = true;
+                            break;
+                        }
+                    }
                 }
+            }
+            if (foundHungryAnt) {
+                details += "\n !";
             }
             if (totalNumberOfAntsCulled > 0) {
                 details += "\nTotal ants culled: " + totalNumberOfAntsCulled + "\n";
+            }
+            if (totalStepsTaken > 0) {
+                details += "\nTotal colony steps: " + totalNumberOfAntsCulled + "\n";
             }
             return details;
         }
@@ -382,6 +400,18 @@ public class AntSimulation {
             return details;
         }
 
+        public boolean hasSimulationEnded() {
+            if (ants.isEmpty()) {
+                return true;
+            } else {
+            return false;
+            }
+        }
+
+        public String getEndReason() {
+            return "";
+        }
+
         public void advanceStage(int numberOfStages) {
             for (int count = 1; count <= numberOfStages; count++) {
                 ArrayList<Pheromone> pheromonesToDelete = new ArrayList<Pheromone>();
@@ -400,7 +430,7 @@ public class AntSimulation {
                     if ((a.getFoodCarried() > 0) && a.isAtOwnNest()) {
                         addFoodToNest(a.getFoodCarried(), a.getRow(), a.getColumn());
                         a.updateFoodCarried(-a.getFoodCarried());
-                    } else if ((currentCell.getAmountOfFood() > 0) && (a.getFoodCarried() == 0) && (a.getFoodCapacity() > 0)) {
+                    } else if ((currentCell.getAmountOfFood() > 0) && (a.getFoodCarried() == 0) && (a.getFoodCapacity() > 0) && getNumberOfAntsInCell(currentCell) < 3) {
                         int foodObtained;
                         do {
                             foodObtained = rGen.nextInt(a.getFoodCapacity()) + 1;
@@ -418,6 +448,7 @@ public class AntSimulation {
                     n.advanceStage(nests, ants, pheromones);
                 }
             }
+
         }
     }
 
@@ -504,6 +535,7 @@ public class AntSimulation {
         @Override
         public void advanceStage(ArrayList<Nest> nests, ArrayList<Ant> ants, ArrayList<Pheromone> pheromones) {
             stages += 1;
+            Simulation.totalStepsTaken++;
         }
 
         @Override
@@ -568,6 +600,22 @@ public class AntSimulation {
             super(startRow, startColumn, nestInRow, nestInColumn);
             typeOfAnt = "worker";
             foodCapacity = 30;
+        }
+
+        static class HungryAnt extends WorkerAnt {
+            HungryAnt (int startRow, int startColumn, int nestInRow, int nestInColumn) {
+                super(startRow, startColumn, nestInRow, nestInColumn);
+                typeOfAnt = "hungry";
+                foodCapacity = 60;
+            }
+            @Override
+            public void advanceStage(ArrayList<Nest> nests, ArrayList<Ant> ants, ArrayList<Pheromone> pheromones) {
+                super.advanceStage(nests, ants, pheromones);
+                if (this.stages > 0 && this.stages % 10 == 0 && this.amountOfFoodCarried > 0) {
+                    amountOfFoodCarried--;
+                }
+            }
+
         }
 
         static class Scout extends WorkerAnt {
@@ -693,8 +741,10 @@ public class AntSimulation {
                             numberOfQueens += 1;
                         } else {
                             int rNo3 = rGen.nextInt(100);
-                            if (rNo3 < 20) {
+                            if (rNo3 < 30 && rNo3 > 10) {
                                 ants.add(new WorkerAnt.Scout(row, column, row, column));
+                            } else if (rNo3 < 10 ) {
+                                ants.add(new WorkerAnt.HungryAnt(row, column, row, column));
                             } else {
                                 ants.add(new WorkerAnt(row, column, row, column));
                             }
